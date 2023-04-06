@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ namespace Database_inventory
                                         Console.WriteLine("3. Hapus Data");
                                         Console.WriteLine("4. Update Data");
                                         Console.WriteLine("5. Keluar");
-                                        Console.Write("\nEnter your choice (1-3) : ");
+                                        Console.Write("\nEnter your choice (1-4) : ");
                                         char ch = Convert.ToChar(Console.ReadLine());
                                         switch (ch)
                                         {
@@ -153,6 +154,71 @@ namespace Database_inventory
                 }
             }
         }
-    }
+
+        public void baca(SqlConnection con)
+        {
+            SqlCommand cmd = new SqlCommand("Select*From barang", con);
+            SqlDataReader r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                for (int i = 0; i < r.FieldCount; i++)
+                {
+                    Console.WriteLine(r.GetValue(i));
+                }
+                Console.WriteLine();
+            }
+        }
+
+        public void insert(string Id_barang, string Nama_barang, string banyak_barang, string Tipe_barang, string Deskripsi_brg, SqlConnection con)
+        {
+            string str = "";
+            str = "insert into barang (Id_barang, Nama_barang, banyak_barang, Tipe_barang, Deskripsi_brg)values(@id, @nma, @byk, @tp, @dsk)";
+            SqlCommand cmd = new SqlCommand(str, con);
+            cmd.CommandType = CommandType.Text;
+
+            cmd.Parameters.Add(new SqlParameter("id", Id_barang));
+            cmd.Parameters.Add(new SqlParameter("nma", Nama_barang));
+            cmd.Parameters.Add(new SqlParameter("byk", banyak_barang));
+            cmd.Parameters.Add(new SqlParameter("tp", Tipe_barang));
+            cmd.Parameters.Add(new SqlParameter("dsk", Deskripsi_brg));
+            cmd.ExecuteNonQuery();
+            Console.WriteLine("Data Berhasil Ditambahkan");
+        }
+
+        public void delete(string Id_barang, SqlConnection con)
+        {
+            string str = "";
+            str = "delete from barang where Id_barang = @id";
+            SqlCommand cmd = new SqlCommand(str, con);
+            cmd.CommandType = CommandType.Text;
+
+            cmd.Parameters.Add(new SqlParameter("id", Id_barang));
+            int affectedRows = cmd.ExecuteNonQuery();
+            if (affectedRows > 0)
+            {
+                Console.WriteLine("Data dengan Id_barang " + Id_barang + " berhasil dihapus");
+            }
+            else
+            {
+                Console.WriteLine("Data dengan Id_barang " + Id_barang + " tidak ditemukan");
+            }
+        }
+
+        public void update(string Id_barang, string Nama_barang, string banyak_barang, string Tipe_barang, string Deskripsi_brg, SqlConnection con)
+        {
+            string str = "";
+            str = "UPDATE barang SET Nama_barang = @nma, banyak_barang = @byk, Tipe_barang = @tp, Deskripsi_brg = @dsk WHERE Id_barang = @id";
+            SqlCommand cmd = new SqlCommand(str, con);
+            cmd.CommandType = CommandType.Text;
+
+            cmd.Parameters.Add(new SqlParameter("id", Id_barang));
+            cmd.Parameters.Add(new SqlParameter("nma", Nama_barang));
+            cmd.Parameters.Add(new SqlParameter("byk", banyak_barang));
+            cmd.Parameters.Add(new SqlParameter("tp", Tipe_barang));
+            cmd.Parameters.Add(new SqlParameter("dsk", Deskripsi_brg));
+            cmd.ExecuteNonQuery();
+            Console.WriteLine("Data Berhasil Diubah");
+        }
+
     }
 }
